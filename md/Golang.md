@@ -20,6 +20,8 @@ func main() {
 }
 ```
 
+[Go语言标准库文档中文版]("https://studygolang.com/pkgdoc")
+
 
 
  ### 2.2、Go基础
@@ -346,6 +348,31 @@ Go之所以会那么简洁，是因为它有一些默认的行为：
 
 - 大写字母开头的变量是可导出的，也就是其它包可以读取的，是公有变量；小写字母开头的就是不可导出的，是私有变量。
 - 大写字母开头的函数也是一样，相当于`class`中的带`public`关键词的公有函数；小写字母开头的就是有`private`关键词的私有函数。
+
+
+
+#### builtin
+
+
+
+
+
+```go
+func new(Type) *Type
+```
+
+用来分配内存，主要用来分配值类型，比如int,float,struct...返回的是指针
+
+```go
+func make(Type, size IntegerType) Type
+```
+
+内建函数==**make**==分配并初始化一个类型为切片、map或通道的对象。其第一个实参为类型，而非值。make得返回类型与其参数相同，而非指向它得指针。其具体结果取决于具体得类型。
+
+slice：size指定了其长度。该切片的容量等于其长度。切片支持第二个整数实参可用来指定不同的容量；但是第二个整数值必须不小于第一个整数值。
+map：初始分配的创建取决于size，但产生的映射长度为0。size可以省略，实际上，对于map来说，size不管是多少，为map分配长度都为0。
+chan：通道的缓存根据指定的缓存容量初始化。若size为零或被省略，该信道即为无缓存的。
+
 
 #### array、slice、map
 
@@ -1111,44 +1138,6 @@ func main(){
 
 函数当做值和类型在我们写一些通用接口的时候非常有用，通过上面例子我们看到`testInt`这个类型是一个函数类型，然后两个`filter`函数的参数和返回值与`testInt`类型是一样的，但是我们可以实现很多种的逻辑，这样使得我们的程序变得非常的灵活。
 
-#### Panic和Recover
-
-Go没有像Java那样的异常机制，它不能抛出异常，而是使用了`panic`和`recover`机制。一定要记住，你应当把它作为最后的手段来使用，也就是说，你的代码中应当没有，或者很少有`panic`的东西。这是个强大的工具，请明智地使用它。那么，我们应该如何使用它呢？
-
-Panic
-
-> 是一个内建函数，可以中断原有的控制流程，进入一个`panic`状态中。当函数`F`调用`panic`，函数F的执行被中断，但是`F`中的延迟函数会正常执行，然后F返回到调用它的地方。在调用的地方，`F`的行为就像调用了`panic`。这一过程继续向上，直到发生`panic`的`goroutine`中所有调用的函数返回，此时程序退出。`panic`可以直接调用`panic`产生。也可以由运行时错误产生，例如访问越界的数组。
-
-Recover
-
-> 是一个内建的函数，可以让进入`panic`状态的`goroutine`恢复过来。`recover`仅在延迟函数中有效。在正常的执行过程中，调用`recover`会返回`nil`，并且没有其它任何效果。如果当前的`goroutine`陷入`panic`状态，调用`recover`可以捕获到`panic`的输入值，并且恢复正常的执行。
-
-下面这个函数演示了如何在过程中使用`panic`
-
-```go
-var user = os.Getenv("USER")
-
-func init() {
-	if user == "" {
-		panic("no value for $USER")
-	}
-}
-```
-
-下面这个函数检查作为其参数的函数在执行时是否会产生`panic`：
-
-```go
-func throwsPanic(f func()) (b bool) {
-	defer func() {
-		if x := recover(); x != nil {
-			b = true
-		}
-	}()
-	f() //执行函数f，如果f中出现了panic，那么就可以恢复回来
-	return
-}
-```
-
 #### `main`函数和`init`函数
 
 Go里面有两个保留的函数：`init`函数（能够应用于所有的`package`）和`main`函数（只能应用于`package main`）。这两个函数在定义时不能有任何的参数和返回值。虽然一个`package`里面可以写任意多个`init`函数，但这无论是对于可读性还是以后的可维护性来说，我们都强烈建议用户在一个`package`中每个文件只写一个`init`函数。
@@ -1308,6 +1297,64 @@ func (book Book) GetTitle() string {
 
 func (book *Book) SetTitle(newName string) {
 	book.title = newName
+}
+```
+
+
+
+### 2.5、错误处理机制
+
+#### Panic和Recover
+
+Go没有像Java那样的异常机制，它不能抛出异常，而是使用了`panic`和`recover`机制。一定要记住，你应当把它作为最后的手段来使用，也就是说，你的代码中应当没有，或者很少有`panic`的东西。这是个强大的工具，请明智地使用它。那么，我们应该如何使用它呢？
+
+Panic
+
+> 是一个内建函数，可以中断原有的控制流程，进入一个`panic`状态中。当函数`F`调用`panic`，函数F的执行被中断，但是`F`中的延迟函数会正常执行，然后F返回到调用它的地方。在调用的地方，`F`的行为就像调用了`panic`。这一过程继续向上，直到发生`panic`的`goroutine`中所有调用的函数返回，此时程序退出。`panic`可以直接调用`panic`产生。也可以由运行时错误产生，例如访问越界的数组。
+
+Recover
+
+> 是一个内建的函数，可以让进入`panic`状态的`goroutine`恢复过来。`recover`仅在延迟函数中有效。在正常的执行过程中，调用`recover`会返回`nil`，并且没有其它任何效果。如果当前的`goroutine`陷入`panic`状态，调用`recover`可以捕获到`panic`的输入值，并且恢复正常的执行。
+
+下面这个函数演示了如何在过程中使用`panic`
+
+```go
+var user = os.Getenv("USER")
+
+func init() {
+	if user == "" {
+		panic("no value for $USER")
+	}
+}
+```
+
+下面这个函数检查作为其参数的函数在执行时是否会产生`panic`：
+
+```go
+func throwsPanic(f func()) (b bool) {
+	defer func() {
+		if x := recover(); x != nil {
+			b = true
+		}
+	}()
+	f() //执行函数f，如果f中出现了panic，那么就可以恢复回来
+	return
+}
+```
+
+#### 
+
+#### 自定义错误
+
+```go
+func testCustomError(name string) (res string, err error) {
+
+	if len(name) < 3 {
+		return "yes", nil
+	} else {
+		return name, errors.New("too long")
+	}
+
 }
 ```
 

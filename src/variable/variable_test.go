@@ -49,3 +49,38 @@ func TestFunc(t *testing.T) {
 
 	testNi()
 }
+
+func TestStringFunc(t *testing.T) {
+
+	testStringFunc()
+}
+
+func TestTimeFunc(t *testing.T) {
+
+	testTimeFunc()
+}
+
+func TestBuiltinFunc(t *testing.T) {
+
+	testBuiltin()
+}
+
+func TestError(t *testing.T) {
+
+	defer func() {
+		if err := recover(); err!= nil {
+			fmt.Println("error tt")
+		}
+	}()
+
+	testError()
+	fmt.Println("test....")
+
+	_, err := testCustomError("c888c")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("666")
+
+}

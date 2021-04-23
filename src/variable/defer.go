@@ -1,16 +1,12 @@
-package main
+package variable
 
 import "fmt"
 
 /**
  * @Author xgSama
  * @Description:
- * @Date 2021/4/21 14:26
+ * @Date 2021/4/23 9:38
  */
-
-func main() {
-	returnAndDefer()
-}
 
 func returnAndDefer() int {
 	defer deferFunc()
