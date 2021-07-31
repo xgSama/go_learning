@@ -1,0 +1,8 @@
+go env -w GOPROXY=https://goproxy.cn,direct
+
+go get -u github.com/golang/protobuf/protoc-gen-go
+go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
+https://github.com/protocolbuffers/protobuf/releases
+./configure --prefix=/usr/local/protobuf
+make && make install

@@ -9,8 +9,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"go_learning/src/lib"
-	_ "go_learning/src/lib"
+	"go_learning/basis/src/lib"
+	_ "go_learning/basis/src/lib"
 )
 
 func main() {

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	_ "go_learning/src/lib"
+	_ "go_learning/basis/src/lib"
 	"strings"
 )
 
